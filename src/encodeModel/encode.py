@@ -22,6 +22,14 @@ class Constraint:
         self.res = None
 
 
+def print_clauses(clauses, file=sys.stdout):
+    for clause in clauses:
+        if len(clause) > 0:
+            for c in clause:
+                file.write(str(c) + ' ')
+            file.write('0' + '\n')
+
+
 class Encode:
     def __init__(self, layers, input_shape=(28, 28, 1), id_start=1):
         assert id_start > 0
@@ -46,6 +54,12 @@ class Encode:
                     self.layers.append([])
                     i += 1
                 self.layers[i].append(layer)
+
+    def change_input_vars(self, id_start):
+        assert id_start < self.id_start
+        self.output_vars_layers[0] = (id_start, self.output_vars_layers[0][1])
+        for i in range(self.output_vars_layers[0][1]):
+            self.all_vars[i].id = i + id_start
 
     def encode(self):
         for layer in self.layers:
@@ -84,16 +98,13 @@ class Encode:
             file.write('>= ' + str(int(constraint.c)) + ' # ' + str(constraint.res) + '\n')
 
     def print_clauses(self, file=sys.stdout):
-        for clause in self.clauses:
-            if len(clause) > 0:
-                for c in clause:
-                    file.write(str(c) + ' ')
-                file.write('0' + '\n')
-    def save_cnf(self, name):
-        file = open(name, 'w')
+        print_clauses(self.clauses, file)
+
+    def save_cnf(self, name, mode='w'):
+        file = open(name, mode)
         self.print_vars(file)
-        self.print_clauses(file)
         self.print_constraints(file)
+        print_clauses(self.clauses, file)
         file.close()
 
     def encodeInit(self, layer):

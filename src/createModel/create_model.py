@@ -63,6 +63,19 @@ def CreateModel4(train_images, train_labels, test_images, test_labels):
 
     SaveModel(model, train_images, train_labels, test_images, test_labels, "model4.h5")
 
+def CreateModel5(train_images, train_labels, test_images, test_labels):
+    model = tf.keras.models.Sequential()
+    ind = [0]
+
+    addInit(model, ind)
+    addFlatten(model, ind)
+    addQuantDense(model, 32, ind)
+    addQuantDense(model, 64, ind)
+    addQuantDense(model, 128, ind)
+    addOutput(model, 10, ind)
+
+    SaveModel(model, train_images, train_labels, test_images, test_labels, "model5.h5")
+
 def SaveModel(model, train_images, train_labels, test_images, test_labels, name):
     model.compile(optimizer='adam',
                   loss='sparse_categorical_crossentropy',

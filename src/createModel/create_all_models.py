@@ -1,5 +1,6 @@
 import tensorflow as tf
-from src.createModel.create_model import CreateModel0, CreateModel1, CreateModel2, CreateModel3, CreateModel4
+from src.createModel.create_model import CreateModel0, CreateModel1, CreateModel2, CreateModel3, CreateModel4, \
+    CreateModel5
 
 # Load MNIST
 (train_images, train_labels), (test_images, test_labels) = tf.keras.datasets.mnist.load_data()
@@ -12,3 +13,4 @@ CreateModel1(train_images, train_labels, test_images, test_labels)
 CreateModel2(train_images, train_labels, test_images, test_labels)
 CreateModel3(train_images, train_labels, test_images, test_labels)
 CreateModel4(train_images, train_labels, test_images, test_labels)
+CreateModel5(train_images, train_labels, test_images, test_labels)
