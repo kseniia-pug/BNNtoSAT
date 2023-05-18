@@ -90,9 +90,6 @@ class Encode:
 
     def print_constraints(self, file=sys.stdout):
         for constraint in self.constraints:
-            if len(constraint.vars) == 0:
-                assert constraint.c == 0
-                continue
             for var in constraint.vars:
                 file.write(str(var) + ' ')
             file.write('>= ' + str(int(constraint.c)) + ' # ' + str(constraint.res) + '\n')
@@ -102,10 +99,22 @@ class Encode:
 
     def save_cnf(self, name, mode='w'):
         file = open(name, mode)
+        if mode == 'w':
+            file.write('p cnf ' + str(len(self.all_vars)) + ' ' + str(len(self.clauses) + len(self.constraints)) + '\n')
         self.print_vars(file)
+        self.update_constraints()
         self.print_constraints(file)
-        print_clauses(self.clauses, file)
+        self.print_clauses(file)
         file.close()
+
+    def update_constraints(self):
+        new_constraints = []
+        for constraint in self.constraints:
+            if len(constraint.vars) == 0:
+                assert constraint.c == 0
+                continue
+            new_constraints.append(constraint)
+        self.constraints = new_constraints
 
     def encodeInit(self, layer):
         k = 1

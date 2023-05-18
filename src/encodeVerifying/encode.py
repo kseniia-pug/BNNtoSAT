@@ -1,11 +1,8 @@
-import os
-
 from src.encodeModel.encode import print_clauses
 from src.encodeModel.encode_constraint import encode_geq_and_leq, num2bits
 
 
 def add_input_constraint(path_cnf, a, b):
-    print(os.getcwd())
     file = open(path_cnf, 'r')
     res_file = open(path_cnf[:len(path_cnf)-4] + "_with_input_constraint_" + str(a) + "_and_" + str(b) + ".cnf", 'w')
 
@@ -14,7 +11,6 @@ def add_input_constraint(path_cnf, a, b):
         line = file.readline()
         if not line:
             break
-        res_file.write(line)
         if line[0] == 'c':
             info = line.split()
             if info[1] == 'input':
@@ -22,6 +18,15 @@ def add_input_constraint(path_cnf, a, b):
     x = list(set(x))
     n = len(x)
     clauses = encode_geq_and_leq(x, num2bits(a, n), num2bits(b, n))
+    while True:
+        line = file.readline()
+        if not line:
+            break
+        if line[0] == 'p':
+            info = line.split()
+            res_file.write('p cnf ' + info[2] + ' ' + str(int(info[3]) + len(clauses)) + '\n')
+        else:
+            res_file.write(line)
     print_clauses(clauses, res_file)
 
     res_file.close()
