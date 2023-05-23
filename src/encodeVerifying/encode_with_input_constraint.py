@@ -35,17 +35,14 @@ def add_input_constraint(path_cnf, a, b):
     file.close()
 
 
-# for a in range(0, 700, 100):
-#     b = a + 100
-
 a = '0'
 b = '10000000000000000'
 add_input_constraint("../../data/CNFs/equal_models_0_and_0.cnf", a, b)
-    # add_input_constraint("../../data/CNFs/equal_models_0_and_4.cnf", a, b)
-    # add_input_constraint("../../data/CNFs/equal_models_0_and_5.cnf", a, b)
-    # add_input_constraint("../../data/CNFs/equal_models_4_and_0.cnf", a, b)
-    # add_input_constraint("../../data/CNFs/equal_models_4_and_4.cnf", a, b)
-    # add_input_constraint("../../data/CNFs/equal_models_4_and_5.cnf", a, b)
-    # add_input_constraint("../../data/CNFs/equal_models_5_and_0.cnf", a, b)
-    # add_input_constraint("../../data/CNFs/equal_models_5_and_4.cnf", a, b)
-    # add_input_constraint("../../data/CNFs/equal_models_5_and_5.cnf", a, b)
+# add_input_constraint("../../data/CNFs/equal_models_0_and_4.cnf", a, b)
+# add_input_constraint("../../data/CNFs/equal_models_0_and_5.cnf", a, b)
+# add_input_constraint("../../data/CNFs/equal_models_4_and_0.cnf", a, b)
+# add_input_constraint("../../data/CNFs/equal_models_4_and_4.cnf", a, b)
+# add_input_constraint("../../data/CNFs/equal_models_4_and_5.cnf", a, b)
+# add_input_constraint("../../data/CNFs/equal_models_5_and_0.cnf", a, b)
+# add_input_constraint("../../data/CNFs/equal_models_5_and_4.cnf", a, b)
+# add_input_constraint("../../data/CNFs/equal_models_5_and_5.cnf", a, b)

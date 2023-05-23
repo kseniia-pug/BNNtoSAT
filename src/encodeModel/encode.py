@@ -95,6 +95,7 @@ class Encode:
             self.all_vars[i].id = i + id_start
 
     def encode(self):
+        print("Start encode BNN")
         for layer in self.layers:
             if layer[0].name.split('/')[1] == "Init":
                 self.encodeInit(layer)
@@ -108,6 +109,7 @@ class Encode:
                 self.encodeQuantDense(layer)
             elif layer[0].name.split('/')[1] == "Output":
                 self.encodeOutput(layer)
+        print("End encode BNN")
 
     def create_var(self, name):
         id = self.id_start
@@ -139,19 +141,9 @@ class Encode:
         if mode == 'w':
             file.write('p cnf ' + str(len(self.all_vars)) + ' ' + str(len(self.clauses) + len(self.constraints)) + '\n')
         self.print_vars(file)
-        # self.update_constraints()
         self.print_constraints(file)
         self.print_clauses(file)
         file.close()
-
-    # def update_constraints(self):
-    #     new_constraints = []
-    #     for constraint in self.constraints:
-    #         if len(constraint.vars) == 0:
-    #             assert constraint.c == 0
-    #             continue
-    #         new_constraints.append(constraint)
-    #     self.constraints = new_constraints
 
     def encodeInit(self, layer):
         k = 1
@@ -177,7 +169,6 @@ class Encode:
         self.output_layers_shape.append((k))
         print("encodeFlatten")
 
-    # TODO
     def getCForBatchNormalization(self, batchNormalization, b=None):
         # print("moving_variance", batchNormalization.moving_variance.read_value().numpy())
         # print("epsilon", batchNormalization.epsilon)
@@ -217,7 +208,6 @@ class Encode:
             constraint = Constraint()
             var = self.create_var(layer[0].name)
             constraint.res = var.id
-            # print(a.shape, prev_var[1])
             for j in range(prev_var[1]):
                 if a[i][j] == 1:
                     constraint.vars.append(j + prev_var[0])
@@ -237,7 +227,6 @@ class Encode:
         prev_var = self.output_vars_layers[-1]
         a = layer[0].weights[0].read_value().numpy().transpose()
 
-        # print("a", a)
         b = [0] * len(layer[0].weights[0].read_value().numpy()[0])
         if len(layer[0].weights) > 1:
             b = layer[0].weights[1].read_value().numpy()

@@ -1,8 +1,9 @@
+# Это просто пример кодировки сети, решение этих формул ничего не говорит об их устройстве
+
 import tensorflow as tf
 from larq.quantizers import SteSign
 
 from src.encodeModel.encode import Encode
-from src.encodeModel.encode_constraint import encode_geq_and_leq, num2bits
 
 
 def make_cnf_model(id):
