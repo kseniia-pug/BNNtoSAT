@@ -57,6 +57,39 @@ class Encode:
 
     def change_input_vars(self, id_start):
         assert id_start < self.id_start
+        for i in range(len(self.constraints)):
+            if abs(self.constraints[i].res) < self.id_start + self.output_vars_layers[0][1]:
+                if self.constraints[i].res < 0:
+                    self.constraints[i].res = -self.constraints[i].res
+                    self.constraints[i].res -= self.id_start
+                    self.constraints[i].res += id_start
+                    self.constraints[i].res = -self.constraints[i].res
+                else:
+                    self.constraints[i].res -= self.id_start
+                    self.constraints[i].res += id_start
+            for j in range(len(self.constraints[i].vars)):
+                if abs(self.constraints[i].vars[j]) < self.id_start + self.output_vars_layers[0][1]:
+                    print(str(self.constraints[i].vars[j]) + '->', end='')
+                    if self.constraints[i].vars[j] < 0:
+                        self.constraints[i].vars[j] = -self.constraints[i].vars[j]
+                        self.constraints[i].vars[j] -= self.id_start
+                        self.constraints[i].vars[j] += id_start
+                        self.constraints[i].vars[j] = -self.constraints[i].vars[j]
+                    else:
+                        self.constraints[i].vars[j] -= self.id_start
+                        self.constraints[i].vars[j] += id_start
+                    print(str(self.constraints[i].vars[j]))
+        for i in range(len(self.clauses)):
+            for j in range(len(self.clauses[i])):
+                if abs(self.clauses[i][j]) < self.id_start + self.output_vars_layers[0][1]:
+                    if self.clauses[i][j] < 0:
+                        self.clauses[i][j] = -self.clauses[i][j]
+                        self.clauses[i][j] -= self.id_start
+                        self.clauses[i][j] += id_start
+                        self.clauses[i][j] = -self.clauses[i][j]
+                    else:
+                        self.clauses[i][j] -= self.id_start
+                        self.clauses[i][j] += id_start
         self.output_vars_layers[0] = (id_start, self.output_vars_layers[0][1])
         for i in range(self.output_vars_layers[0][1]):
             self.all_vars[i].id = i + id_start
@@ -90,9 +123,13 @@ class Encode:
 
     def print_constraints(self, file=sys.stdout):
         for constraint in self.constraints:
-            for var in constraint.vars:
-                file.write(str(var) + ' ')
-            file.write('>= ' + str(int(constraint.c)) + ' # ' + str(constraint.res) + '\n')
+            if len(constraint.vars) == 0:
+                assert constraint.c == 0
+                file.write(str(constraint.res) + ' 0\n')
+            else:
+                for var in constraint.vars:
+                    file.write(str(var) + ' ')
+                file.write('>= ' + str(int(constraint.c)) + ' # ' + str(constraint.res) + '\n')
 
     def print_clauses(self, file=sys.stdout):
         print_clauses(self.clauses, file)
@@ -102,19 +139,19 @@ class Encode:
         if mode == 'w':
             file.write('p cnf ' + str(len(self.all_vars)) + ' ' + str(len(self.clauses) + len(self.constraints)) + '\n')
         self.print_vars(file)
-        self.update_constraints()
+        # self.update_constraints()
         self.print_constraints(file)
         self.print_clauses(file)
         file.close()
 
-    def update_constraints(self):
-        new_constraints = []
-        for constraint in self.constraints:
-            if len(constraint.vars) == 0:
-                assert constraint.c == 0
-                continue
-            new_constraints.append(constraint)
-        self.constraints = new_constraints
+    # def update_constraints(self):
+    #     new_constraints = []
+    #     for constraint in self.constraints:
+    #         if len(constraint.vars) == 0:
+    #             assert constraint.c == 0
+    #             continue
+    #         new_constraints.append(constraint)
+    #     self.constraints = new_constraints
 
     def encodeInit(self, layer):
         k = 1
@@ -206,7 +243,7 @@ class Encode:
             b = layer[0].weights[1].read_value().numpy()
 
         for i in range(len(a)):
-            self.create_var("Ans=" + str(i + 1))
+            self.create_var("Ans=" + str(i))
 
         for i in range(len(a)):
             ans_constraint = Constraint()

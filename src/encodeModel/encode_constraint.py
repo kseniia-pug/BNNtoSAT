@@ -1,7 +1,9 @@
 from typing import List
 
 
-def str2bits(s: str) -> List[bool]:
+def str2bits(s: str, n=0) -> List[bool]:
+    n = max(len(s), n) - len(s)
+    s = str('0' * n) + s
     return [{'1': True, '0': False}[c] for c in s]
 
 def bits2str(bits: List[bool]) -> str:

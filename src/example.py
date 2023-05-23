@@ -42,6 +42,7 @@ for i in range(len(model.layers)):
 
 print('\n-----------', 'ANSWER', '-----------')
 max_value = max(acts[-1][0])
+print([str(index) + ' ' + str(val) for index, val in enumerate(acts[-1][0])])
 print([index for index, val in enumerate(acts[-1][0]) if val == max_value])
 
 encode = Encode(model.layers)

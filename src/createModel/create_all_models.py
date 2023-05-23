@@ -9,8 +9,8 @@ test_images = test_images.reshape((10000, 28, 28, 1))
 train_images, test_images = train_images / 127.5 - 1, test_images / 127.5 - 1 # Normalize pixel values to be between -1 and 1
 
 CreateModel0(train_images, train_labels, test_images, test_labels)
-CreateModel1(train_images, train_labels, test_images, test_labels)
-CreateModel2(train_images, train_labels, test_images, test_labels)
-CreateModel3(train_images, train_labels, test_images, test_labels)
-CreateModel4(train_images, train_labels, test_images, test_labels)
-CreateModel5(train_images, train_labels, test_images, test_labels)
+# CreateModel1(train_images, train_labels, test_images, test_labels)
+# CreateModel2(train_images, train_labels, test_images, test_labels)
+# CreateModel3(train_images, train_labels, test_images, test_labels)
+# CreateModel4(train_images, train_labels, test_images, test_labels)
+# CreateModel5(train_images, train_labels, test_images, test_labels)
