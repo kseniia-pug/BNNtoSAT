@@ -39,7 +39,7 @@ def make_cnf_equal_models(id1, id2):
     encode2.save_cnf(path, mode='a')
 
 
-# make_cnf_equal_models(0, 0)
+make_cnf_equal_models(0, 0)
 make_cnf_equal_models(0, 4)
 make_cnf_equal_models(4, 0)
 make_cnf_equal_models(4, 4)

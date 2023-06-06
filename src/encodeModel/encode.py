@@ -128,6 +128,8 @@ class Encode:
             if len(constraint.vars) == 0:
                 assert constraint.c == 0
                 file.write(str(constraint.res) + ' 0\n')
+            elif len(constraint.vars) < constraint.c:
+                file.write(str(-constraint.res) + ' 0\n')
             else:
                 for var in constraint.vars:
                     file.write(str(var) + ' ')

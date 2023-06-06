@@ -1,3 +1,5 @@
+# Здесь можно построить формулу с ограничением, это просто пример
+
 from src.encodeModel.encode import print_clauses
 from src.encodeModel.encode_constraint import encode_geq_and_leq, str2bits
 
