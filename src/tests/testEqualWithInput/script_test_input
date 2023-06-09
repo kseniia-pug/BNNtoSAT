@@ -7,7 +7,7 @@ for ((var = 1; var <= $3; var++)); do
   input_path="../../../data/res_minisatcs/input_$name_cnf$var.txt"
 
   python3 ./generate_input.py $1 $2 > $input_path
-  ../../minisatcs/minisat ../../../data/CNFs/$name_cnf.cnf $path_res
+  ../../../solvers/minisatcs/minisat ../../../data/CNFs/$name_cnf.cnf $path_res
   python3 ./check_res.py $input_path $path_res
   echo "<<--------------------------------------$var----------------------------------------"
 done
