@@ -29,6 +29,17 @@ def print_clauses(clauses, file=sys.stdout):
                 file.write(str(c) + ' ')
             file.write('0' + '\n')
 
+def print_constraints(constraints, file=sys.stdout):
+    for constraint in constraints:
+        if len(constraint.vars) == 0:
+            assert constraint.c == 0
+            file.write(str(constraint.res) + ' 0\n')
+        elif len(constraint.vars) < constraint.c:
+            file.write(str(-constraint.res) + ' 0\n')
+        else:
+            for var in constraint.vars:
+                file.write(str(var) + ' ')
+            file.write('>= ' + str(int(constraint.c)) + ' # ' + str(constraint.res) + '\n')
 
 class Encode:
     def __init__(self, layers, input_shape=(28, 28, 1), id_start=1):
@@ -90,7 +101,8 @@ class Encode:
                     else:
                         self.clauses[i][j] -= self.id_start
                         self.clauses[i][j] += id_start
-        self.output_vars_layers[0] = (id_start, self.output_vars_layers[0][1])
+        for i in range(len(self.output_vars_layers)):
+            self.output_vars_layers[i] = (id_start + self.output_vars_layers[0][0] - 1, self.output_vars_layers[0][1])
         for i in range(self.output_vars_layers[0][1]):
             self.all_vars[i].id = i + id_start
 
@@ -124,16 +136,7 @@ class Encode:
             file.write('c ' + str(i.name) + ' ' + str(i.id) + '\n')
 
     def print_constraints(self, file=sys.stdout):
-        for constraint in self.constraints:
-            if len(constraint.vars) == 0:
-                assert constraint.c == 0
-                file.write(str(constraint.res) + ' 0\n')
-            elif len(constraint.vars) < constraint.c:
-                file.write(str(-constraint.res) + ' 0\n')
-            else:
-                for var in constraint.vars:
-                    file.write(str(var) + ' ')
-                file.write('>= ' + str(int(constraint.c)) + ' # ' + str(constraint.res) + '\n')
+        print_constraints(self.constraints, file)
 
     def print_clauses(self, file=sys.stdout):
         print_clauses(self.clauses, file)
