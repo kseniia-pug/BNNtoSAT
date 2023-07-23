@@ -1,4 +1,7 @@
-def make_cnf_equal_models(name1, len_input_1, id_res1, k_res1, name2, len_input_2, id_res2, k_res2):
+from pathlib import Path
+
+
+def encode_equality_formulas(path1, len_input_1, id_res1, k_res1, path2, len_input_2, id_res2, k_res2):
     k_vars = 0
     k_clauses = 0
     n1 = 0
@@ -6,9 +9,9 @@ def make_cnf_equal_models(name1, len_input_1, id_res1, k_res1, name2, len_input_
     assert len_input_1 == len_input_2
     assert k_res1 == k_res2
 
-    file1 = open('../../data/CNFs/' + name1 + '.cnf', 'r')
-    file2 = open('../../data/CNFs/' + name2 + '.cnf', 'r')
-    file_res = open('../../data/CNFs/equal_' + name1 + '_and_' + name2 + '.cnf', 'w')
+    file1 = open(path1, 'r')
+    file2 = open(path2, 'r')
+    file_res = open('../../data/CNFs/equality_' + Path(path1).stem + '_and_' + Path(path2).stem + '.cnfcc', 'w')
     while True:
         line = file1.readline()
         if not line:
@@ -62,6 +65,3 @@ def make_cnf_equal_models(name1, len_input_1, id_res1, k_res1, name2, len_input_
     file1.close()
     file2.close()
     file_res.close()
-
-
-make_cnf_equal_models(name1='check2', len_input_1=3, id_res1=4, k_res1=1, name2='check2_cnf', len_input_2=3, id_res2=4, k_res2=1)

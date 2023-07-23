@@ -1,10 +1,13 @@
-from pysat.card import ITotalizer
+from pathlib import Path
 
 
-def atLeatK_to_cnfPlus_without_new_vars(path_cnf, path_res_cnf):
+def atleatk_to_cnfp(path):
     k_vars, k_clauses = 0, 0
-    file = open(path_cnf, 'r')
-    file_res = open(path_res_cnf, 'w')
+
+    assert Path(path).suffix == ".cnfcc"
+    path_res = path[:-len(".cnfcc")] + ".cnfp"
+    file = open(path, 'r')
+    file_res = open(path_res, 'w')
 
     while True:
         line = file.readline()
@@ -41,24 +44,31 @@ def atLeatK_to_cnfPlus_without_new_vars(path_cnf, path_res_cnf):
             k_clauses += 1
             file_res.write(str(-res_var) + ' 0\n')
             continue
+        res_vars_copy = [res_var]
+        for i in range(max(bound - 1, len(vars) - bound)):
+            k_vars += 1
+            res_vars_copy.append(k_vars)
+            k_clauses += 2
+            file_res.write(str(res_var) + ' ' + str(-k_vars) + ' 0\n')
+            file_res.write(str(-res_var) + ' ' + str(k_vars) + ' 0\n')
 
         k_clauses += 1
         for var in vars:
             file_res.write(str(var) + ' ')
         for i in range(bound):
-            file_res.write(str(-res_var) + ' ')
+            file_res.write(str(-res_vars_copy[i]) + ' ')
         file_res.write('>= ' + str(bound) + '\n')
 
         k_clauses += 1
         for var in vars:
             file_res.write(str(var) + ' ')
         for i in range(len(vars) - bound + 1):
-            file_res.write(str(-res_var) + ' ')
+            file_res.write(str(-res_vars_copy[i]) + ' ')
         file_res.write('<= ' + str(len(vars)) + '\n')
     file.close()
     file_res.close()
 
-    with open(path_res_cnf,
+    with open(path_res,
               'r+') as fp:  # Там есть ограничение на длину списка в 536 870 912, так что поаккуратнее с большими формулами
         lines = fp.readlines()
         lines.insert(0, 'p cnf+ ' + str(k_vars) + ' ' + str(k_clauses) + '\n')
@@ -66,14 +76,15 @@ def atLeatK_to_cnfPlus_without_new_vars(path_cnf, path_res_cnf):
         fp.writelines(lines)
 
 
-# atLeatK_to_cnfPlus_without_new_vars("../../data/CNFs/equal_models_0_and_0.cnf", "../../data/CNFs/equal_models_0_and_0_small.cnfp")
-# atLeatK_to_cnfPlus_without_new_vars("../../data/CNFs/equal_models_0_and_4.cnf", "../../data/CNFs/equal_models_0_and_4_small.cnfp")
-# atLeatK_to_cnfPlus_without_new_vars("../../data/CNFs/equal_models_0_and_5.cnf", "../../data/CNFs/equal_models_0_and_5_small.cnfp")
-# atLeatK_to_cnfPlus_without_new_vars("../../data/CNFs/equal_models_4_and_0.cnf", "../../data/CNFs/equal_models_4_and_0_small.cnfp")
-# atLeatK_to_cnfPlus_without_new_vars("../../data/CNFs/equal_models_4_and_4.cnf", "../../data/CNFs/equal_models_4_and_4_small.cnfp")
-# atLeatK_to_cnfPlus_without_new_vars("../../data/CNFs/equal_models_4_and_5.cnf", "../../data/CNFs/equal_models_4_and_5_small.cnfp")
-# atLeatK_to_cnfPlus_without_new_vars("../../data/CNFs/equal_models_5_and_0.cnf", "../../data/CNFs/equal_models_5_and_0_small.cnfp")
-# atLeatK_to_cnfPlus_without_new_vars("../../data/CNFs/equal_models_5_and_4.cnf", "../../data/CNFs/equal_models_5_and_4_small.cnfp")
-atLeatK_to_cnfPlus_without_new_vars("../../data/CNFs/equal_models_5_and_5.cnf", "../../data/CNFs/equal_models_5_and_5_small.cnfp")
-
-# atLeatK_to_cnfPlus_without_new_vars("../../data/CNFs/check2.cnf", "../../data/CNFs/check2.cnfp")
+atleatk_to_cnfp("../../data/CNFs/universal_adversarial_robustness_model0.cnfcc")
+atleatk_to_cnfp("../../data/CNFs/universal_adversarial_robustness_model4.cnfcc")
+atleatk_to_cnfp("../../data/CNFs/universal_adversarial_robustness_model5.cnfcc")
+atleatk_to_cnfp("../../data/CNFs/equality_model0_and_model0.cnfcc")
+atleatk_to_cnfp("../../data/CNFs/equality_model0_and_model4.cnfcc")
+atleatk_to_cnfp("../../data/CNFs/equality_model0_and_model5.cnfcc")
+atleatk_to_cnfp("../../data/CNFs/equality_model4_and_model0.cnfcc")
+atleatk_to_cnfp("../../data/CNFs/equality_model4_and_model4.cnfcc")
+atleatk_to_cnfp("../../data/CNFs/equality_model4_and_model5.cnfcc")
+atleatk_to_cnfp("../../data/CNFs/equality_model5_and_model0.cnfcc")
+atleatk_to_cnfp("../../data/CNFs/equality_model5_and_model4.cnfcc")
+atleatk_to_cnfp("../../data/CNFs/equality_model5_and_model5.cnfcc")

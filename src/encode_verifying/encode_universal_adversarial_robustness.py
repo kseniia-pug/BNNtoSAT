@@ -1,29 +1,29 @@
-import copy
-
+# Encode universal adversarial robustness
 import tensorflow as tf
 from larq.quantizers import SteSign
+from pathlib import Path
 
-from src.encodeModel.encode import Encode, Constraint, print_clauses, print_constraints
+from src.encode_model.encode_model import Encode, Constraint, print_clauses, print_constraints
 
 
-def encode(id, tau, rho): # tau: [|input|], rho: [0, 1]
-    model = tf.keras.models.load_model("../../data/models/model" + str(id) + ".h5",
-                                        custom_objects={"custom_activation": SteSign})
-    encode = Encode(model.layers)
-    encode.encode()
-    encode_with_tau = Encode(model.layers, id_start=encode.all_vars[-1].id + 1)
-    encode_with_tau.encode()
+def encode_universal_adversarial_robustness(path, tau, rho):  # tau: [|input|], rho: 0..1
+    model = tf.keras.models.load_model(path, custom_objects={"custom_activation": SteSign})
+    encode = Encode(model)
+    encode_with_tau = Encode(model, id_start=encode.all_vars[-1].id + 1)
 
     input = encode_with_tau.output_vars_layers[0]
     for i in range(len(encode_with_tau.clauses)):
         for j in range(len(encode_with_tau.clauses[i])):
-            if abs(encode_with_tau.clauses[i][j]) < input[1] and tau[abs(encode_with_tau.clauses[i][j])-input[0]] == 1:
+            if abs(encode_with_tau.clauses[i][j]) < input[1] and tau[
+                abs(encode_with_tau.clauses[i][j]) - input[0]] == 1:
                 encode_with_tau.clauses[i][j] = -encode_with_tau.clauses[i][j]
     for i in range(len(encode_with_tau.constraints)):
-        if abs(encode_with_tau.constraints[i].res) < input[1] and tau[abs(encode_with_tau.constraints[i].res)-input[0]] == 1:
+        if abs(encode_with_tau.constraints[i].res) < input[1] and tau[
+            abs(encode_with_tau.constraints[i].res) - input[0]] == 1:
             encode_with_tau.constraints[i].res = -encode_with_tau.constraints[i].res
         for j in range(len(encode_with_tau.constraints[i].vars)):
-            if abs(encode_with_tau.constraints[i].vars[j]) < input[1] and tau[abs(encode_with_tau.constraints[i].vars[j])-input[0]] == 1:
+            if abs(encode_with_tau.constraints[i].vars[j]) < input[1] and tau[
+                abs(encode_with_tau.constraints[i].vars[j]) - input[0]] == 1:
                 encode_with_tau.constraints[i].vars[j] = -encode_with_tau.constraints[i].vars[j]
 
     output = encode.output_vars_layers[-1]
@@ -34,7 +34,7 @@ def encode(id, tau, rho): # tau: [|input|], rho: [0, 1]
     ress = []
 
     for k in range(output[1]):
-        l = [int(x==k) for x in range(output[1])]
+        l = [int(x == k) for x in range(output[1])]
 
         constraint_res = Constraint()
         constraint_res.c = output[1]
@@ -78,20 +78,21 @@ def encode(id, tau, rho): # tau: [|input|], rho: [0, 1]
     clauses.append([constraint.res])
     constraints.append(constraint)
 
-    path = "../../data/CNFs/universal_adversarial_robustness_model_" + str(id) + ".cnf"
-    file = open(path, 'w')
+    res_path = "../../data/CNFs/universal_adversarial_robustness_" + Path(path).stem + ".cnfcc"
+    file = open(res_path, 'w')
     file.write(
         'p cnf ' + str(len(encode.all_vars) + len(encode_with_tau.all_vars)) + ' ' + str(
-            len(encode.clauses) + len(encode_with_tau.constraints) + len(encode.clauses) + len(encode_with_tau.constraints) + len(
+            len(encode.clauses) + len(encode_with_tau.clauses) + len(encode.constraints) + len(
+                encode_with_tau.constraints) + len(
                 clauses) + len(constraints)) + '\n')
     print_clauses(clauses, file)
     print_constraints(constraints, file)
     file.close()
 
-    encode.save_cnf(path, mode='a')
-    encode.save_cnf(path, mode='a')
+    encode.save(res_path, mode='a')
+    encode.save(res_path, mode='a')
 
 
-encode(0, [int(x % 100 == 0) for x in range(784)], 0.1)
-encode(4, [int(x % 1 == 0) for x in range(784)], 0.6)
-encode(5, [int(x % 30 == 0) for x in range(784)], 0.4)
+encode_universal_adversarial_robustness("../../data/models/model0.h5", [int(x % 100 == 0) for x in range(784)], 0.1)
+encode_universal_adversarial_robustness("../../data/models/model4.h5", [int(x % 1 == 0) for x in range(784)], 0.6)
+encode_universal_adversarial_robustness("../../data/models/model5.h5", [int(x % 30 == 0) for x in range(784)], 0.4)

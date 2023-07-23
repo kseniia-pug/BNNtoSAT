@@ -42,9 +42,10 @@ def print_constraints(constraints, file=sys.stdout):
             file.write('>= ' + str(int(constraint.c)) + ' # ' + str(constraint.res) + '\n')
 
 class Encode:
-    def __init__(self, layers, input_shape=(28, 28, 1), id_start=1):
+    def __init__(self, model, input_shape=(28, 28, 1), id_start=1):
         assert id_start > 0
 
+        layers = model.layers
         self.layers = []
         self.all_vars = []
         self.output_vars_layers = []
@@ -65,6 +66,7 @@ class Encode:
                     self.layers.append([])
                     i += 1
                 self.layers[i].append(layer)
+        self._encode()
 
     def change_input_vars(self, id_start):
         assert id_start < self.id_start
@@ -80,7 +82,7 @@ class Encode:
                     self.constraints[i].res += id_start
             for j in range(len(self.constraints[i].vars)):
                 if abs(self.constraints[i].vars[j]) < self.id_start + self.output_vars_layers[0][1]:
-                    print(str(self.constraints[i].vars[j]) + '->', end='')
+                    # print(str(self.constraints[i].vars[j]) + '->', end='')
                     if self.constraints[i].vars[j] < 0:
                         self.constraints[i].vars[j] = -self.constraints[i].vars[j]
                         self.constraints[i].vars[j] -= self.id_start
@@ -89,7 +91,7 @@ class Encode:
                     else:
                         self.constraints[i].vars[j] -= self.id_start
                         self.constraints[i].vars[j] += id_start
-                    print(str(self.constraints[i].vars[j]))
+                    # print(str(self.constraints[i].vars[j]))
         for i in range(len(self.clauses)):
             for j in range(len(self.clauses[i])):
                 if abs(self.clauses[i][j]) < self.id_start + self.output_vars_layers[0][1]:
@@ -101,27 +103,25 @@ class Encode:
                     else:
                         self.clauses[i][j] -= self.id_start
                         self.clauses[i][j] += id_start
-        for i in range(len(self.output_vars_layers)):
-            self.output_vars_layers[i] = (id_start + self.output_vars_layers[0][0] - 1, self.output_vars_layers[0][1])
+        self.output_vars_layers[0] = (id_start, self.output_vars_layers[0][1])
         for i in range(self.output_vars_layers[0][1]):
             self.all_vars[i].id = i + id_start
+        self.id_start = id_start
 
-    def encode(self):
-        print("Start encode BNN")
+    def _encode(self):
         for layer in self.layers:
             if layer[0].name.split('/')[1] == "Init":
-                self.encodeInit(layer)
+                self._encode_init(layer)
             elif layer[0].name.split('/')[1] == "QuantConv2DMaxPooling2D":
-                self.encodeQuantConv2DMaxPooling2D(layer)
+                self._encode_quant_conv2D_maxpooling2D(layer)
             elif layer[0].name.split('/')[1] == "QuantConv2D":
-                self.encodeQuantConv2D(layer)
+                self._encode_quant_conv2D(layer)
             elif layer[0].name.split('/')[1] == "Flatten":
-                self.encodeFlatten(layer)
+                self._encode_flatten(layer)
             elif layer[0].name.split('/')[1] == "QuantDense":
-                self.encodeQuantDense(layer)
+                self._encode_quant_dense(layer)
             elif layer[0].name.split('/')[1] == "Output":
-                self.encodeOutput(layer)
-        print("End encode BNN")
+                self._encode_output(layer)
 
     def create_var(self, name):
         id = self.id_start
@@ -141,7 +141,7 @@ class Encode:
     def print_clauses(self, file=sys.stdout):
         print_clauses(self.clauses, file)
 
-    def save_cnf(self, name, mode='w'):
+    def save(self, name, mode='w'):
         file = open(name, mode)
         if mode == 'w':
             file.write('p cnf ' + str(len(self.all_vars)) + ' ' + str(len(self.clauses) + len(self.constraints)) + '\n')
@@ -150,7 +150,7 @@ class Encode:
         self.print_clauses(file)
         file.close()
 
-    def encodeInit(self, layer):
+    def _encode_init(self, layer):
         k = 1
         for i in self.input_shape:
             k *= i
@@ -158,43 +158,41 @@ class Encode:
             _ = self.create_var("input")
         self.output_vars_layers.append((self.id_start, k))
         self.output_layers_shape.append(self.input_shape)
-        print("encodeInit")
 
-    def encodeQuantConv2DMaxPooling2D(self, layer):
-        print("encodeQuantConv2DMaxPooling2D")
+    def _encode_quant_conv2D_maxpooling2D(self, layer):
+        raise NotImplementedError
 
-    def encodeQuantConv2D(self, layer):
-        print("encodeQuantConv2D")
+    def _encode_quant_conv2D(self, layer):
+        raise NotImplementedError
 
-    def encodeFlatten(self, layer):
+    def _encode_flatten(self, layer):
         k = 1
         for i in self.output_layers_shape[-1]:
             k *= i
         self.output_vars_layers.append(self.output_vars_layers[-1])
         self.output_layers_shape.append((k))
-        print("encodeFlatten")
 
-    def getCForBatchNormalization(self, batchNormalization, b=None):
-        # print("moving_variance", batchNormalization.moving_variance.read_value().numpy())
-        # print("epsilon", batchNormalization.epsilon)
-        # print("gamma", batchNormalization.gamma)
-        # print("beta", batchNormalization.beta)
-        # print("moving_mean", batchNormalization.moving_mean)
+    def _get_c_for_batch_normalization(self, batch_normalization, b=None):
+        # print("moving_variance", batch_normalization.moving_variance.read_value().numpy())
+        # print("epsilon", batch_normalization.epsilon)
+        # print("gamma", batch_normalization.gamma)
+        # print("beta", batch_normalization.beta)
+        # print("moving_mean", batch_normalization.moving_mean)
 
-        if b == None:
-            b = [0] * len(batchNormalization.moving_variance.read_value().numpy())
+        if b is None:
+            b = [0] * len(batch_normalization.moving_variance.read_value().numpy())
         c = [0] * len(b)
         for i in range(len(c)):
-            c_i = -(batchNormalization.moving_variance.read_value().numpy()[i] + batchNormalization.epsilon) / \
-                  batchNormalization.gamma.read_value().numpy()[i] * batchNormalization.beta.read_value().numpy()[i] + \
-                  batchNormalization.moving_mean.read_value().numpy()[i] - b[i]
-            if batchNormalization.gamma.read_value().numpy()[i] > 0:
+            c_i = -(batch_normalization.moving_variance.read_value().numpy()[i] + batch_normalization.epsilon) / \
+                  batch_normalization.gamma.read_value().numpy()[i] * batch_normalization.beta.read_value().numpy()[i] + \
+                  batch_normalization.moving_mean.read_value().numpy()[i] - b[i]
+            if batch_normalization.gamma.read_value().numpy()[i] > 0:
                 c[i] = math.ceil(c_i)
             else:
                 c[i] = math.floor(c_i)
         return c
 
-    def encodeQuantDense(self, layer):
+    def _encode_quant_dense(self, layer):
         start = self.all_vars[-1].id + 1
         k = 0
         if len(self.output_vars_layers) == 0:
@@ -202,12 +200,11 @@ class Encode:
         prev_var = self.output_vars_layers[-1]
         a = layer[0].weights[0].read_value().numpy().transpose()
 
-        # print("a", a)
         c = []
         if len(layer[0].weights) > 1:
-            c = self.getCForBatchNormalization(layer[1], layer[0].weights[1].read_value().numpy())
+            c = self._get_c_for_batch_normalization(layer[1], layer[0].weights[1].read_value().numpy())
         else:
-            c = self.getCForBatchNormalization(layer[1])
+            c = self._get_c_for_batch_normalization(layer[1])
         for i in range(len(a)):
             k += 1
             constraint = Constraint()
@@ -223,9 +220,8 @@ class Encode:
             self.constraints.append(constraint)
         self.output_vars_layers.append((start, k))
         self.output_layers_shape.append((k))
-        print("encodeQuantDense")
 
-    def encodeOutput(self, layer):
+    def _encode_output(self, layer):
         start = self.all_vars[-1].id + 1
         if len(self.output_vars_layers) == 0:
             raise "First layer must be Init"
@@ -260,4 +256,3 @@ class Encode:
 
         self.output_vars_layers.append((start, len(a)))
         self.output_layers_shape.append((len(a)))
-        print("encodeOutput")

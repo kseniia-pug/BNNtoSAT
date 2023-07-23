@@ -3,7 +3,7 @@ import tensorflow as tf
 import larq as lq
 import matplotlib.pyplot as plt
 
-from src.encodeModel.encode import Encode
+from src.encode_model.encode_model import Encode
 
 # Load MNIST
 _, (test_images, test_labels) = tf.keras.datasets.mnist.load_data()
@@ -45,7 +45,6 @@ max_value = max(acts[-1][0])
 print([str(index) + ' ' + str(val) for index, val in enumerate(acts[-1][0])])
 print([index for index, val in enumerate(acts[-1][0]) if val == max_value])
 
-encode = Encode(model.layers)
-encode.encode()
+encode = Encode(model)
 encode.print_vars()
 encode.print_constraints()
