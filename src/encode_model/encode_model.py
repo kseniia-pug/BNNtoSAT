@@ -186,6 +186,15 @@ class Encode:
             c_i = -(batch_normalization.moving_variance.read_value().numpy()[i] + batch_normalization.epsilon) / \
                   batch_normalization.gamma.read_value().numpy()[i] * batch_normalization.beta.read_value().numpy()[i] + \
                   batch_normalization.moving_mean.read_value().numpy()[i] - b[i]
+            if c_i is None or math.isnan(c_i):
+                print(i)
+                print(len(batch_normalization.moving_variance.read_value().numpy()))
+                print(batch_normalization.moving_variance.read_value().numpy()[i])
+                print(batch_normalization.epsilon)
+                print(batch_normalization.gamma.read_value().numpy()[i])
+                print(batch_normalization.beta.read_value().numpy()[i])
+                print(batch_normalization.moving_mean.read_value().numpy()[i])
+                print(b[i])
             if batch_normalization.gamma.read_value().numpy()[i] > 0:
                 c[i] = math.ceil(c_i)
             else:

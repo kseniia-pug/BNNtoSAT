@@ -13,6 +13,8 @@ def encode_model(path):
     encode.save("../../data/CNFs/" + Path(path).stem + ".cnfcc")
 
 
-encode_model("../../data/models/model0.h5")
-encode_model("../../data/models/model4.h5")
-encode_model("../../data/models/model5.h5")
+# encode_model("../../data/models/model0.h5")
+# encode_model("../../data/models/model4.h5")
+# encode_model("../../data/models/model5.h5")
+# encode_model("../../data/models/model6.h5")
+encode_model("../../data/models/model7.h5")

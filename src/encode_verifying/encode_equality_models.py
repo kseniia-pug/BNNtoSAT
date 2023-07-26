@@ -36,14 +36,26 @@ def encode_equality_models(path1, path2):
     encode2.save(path, mode='a')
 
 
-encode_equality_models("../../data/models/model0.h5", "../../data/models/model0.h5")
-encode_equality_models("../../data/models/model0.h5", "../../data/models/model4.h5")
-encode_equality_models("../../data/models/model4.h5", "../../data/models/model0.h5")
-encode_equality_models("../../data/models/model4.h5", "../../data/models/model4.h5")
+# encode_equality_models("../../data/models/model0.h5", "../../data/models/model0.h5")
+# encode_equality_models("../../data/models/model0.h5", "../../data/models/model4.h5")
+# encode_equality_models("../../data/models/model4.h5", "../../data/models/model0.h5")
+# encode_equality_models("../../data/models/model4.h5", "../../data/models/model4.h5")
+#
+# encode_equality_models("../../data/models/model0.h5", "../../data/models/model5.h5")
+# encode_equality_models("../../data/models/model5.h5", "../../data/models/model0.h5")
+# encode_equality_models("../../data/models/model5.h5", "../../data/models/model5.h5")
+#
+# encode_equality_models("../../data/models/model5.h5", "../../data/models/model4.h5")
+# encode_equality_models("../../data/models/model4.h5", "../../data/models/model5.h5")
 
-encode_equality_models("../../data/models/model0.h5", "../../data/models/model5.h5")
-encode_equality_models("../../data/models/model5.h5", "../../data/models/model0.h5")
-encode_equality_models("../../data/models/model5.h5", "../../data/models/model5.h5")
+# encode_equality_models("../../data/models/model0.h5", "../../data/models/model6.h5")
+# encode_equality_models("../../data/models/model5.h5", "../../data/models/model6.h5")
 
-encode_equality_models("../../data/models/model5.h5", "../../data/models/model4.h5")
-encode_equality_models("../../data/models/model4.h5", "../../data/models/model5.h5")
+# encode_equality_models("../../data/models/model0.h5", "../../data/models/model7.h5")
+# encode_equality_models("../../data/models/model0.h5", "../../data/models/model8.h5")
+# encode_equality_models("../../data/models/model0.h5", "../../data/models/model9.h5")
+
+# encode_equality_models("../../data/models/model6.h5", "../../data/models/model7.h5")
+# encode_equality_models("../../data/models/model9.h5", "../../data/models/model7.h5")
+# encode_equality_models("../../data/models/model8.h5", "../../data/models/model7.h5")
+encode_equality_models("../../data/models/model10.h5", "../../data/models/model7.h5")
