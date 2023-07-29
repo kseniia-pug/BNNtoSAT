@@ -42,7 +42,7 @@ def print_constraints(constraints, file=sys.stdout):
             file.write('>= ' + str(int(constraint.c)) + ' # ' + str(constraint.res) + '\n')
 
 class Encode:
-    def __init__(self, model, input_shape=(28, 28, 1), id_start=1):
+    def __init__(self, model, input_shape=tuple([28, 28, 1]), id_start=1):
         assert id_start > 0
 
         layers = model.layers
@@ -170,7 +170,7 @@ class Encode:
         for i in self.output_layers_shape[-1]:
             k *= i
         self.output_vars_layers.append(self.output_vars_layers[-1])
-        self.output_layers_shape.append((k))
+        self.output_layers_shape.append(tuple([k]))
 
     def _get_c_for_batch_normalization(self, batch_normalization, b=None):
         # print("moving_variance", batch_normalization.moving_variance.read_value().numpy())
@@ -228,7 +228,7 @@ class Encode:
             constraint.c += (c[i] + sum(a[i])) // 2
             self.constraints.append(constraint)
         self.output_vars_layers.append((start, k))
-        self.output_layers_shape.append((k))
+        self.output_layers_shape.append(tuple([k]))
 
     def _encode_output(self, layer):
         start = self.all_vars[-1].id + 1
@@ -264,4 +264,4 @@ class Encode:
             self.constraints.append(ans_constraint)
 
         self.output_vars_layers.append((start, len(a)))
-        self.output_layers_shape.append((len(a)))
+        self.output_layers_shape.append(tuple([len(a)]))

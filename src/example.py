@@ -13,6 +13,7 @@ test_images = test_images / 127.5 - 1  # Normalize pixel values to be between -1
 # Print image
 id_image = random.randint(0, 10000-1)
 plt.imshow(test_images[id_image])
+print(id_image)
 plt.show()
 
 # Get stat

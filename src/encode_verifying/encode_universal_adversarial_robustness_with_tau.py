@@ -74,6 +74,7 @@ def encode_universal_adversarial_robustness_with_tau(path, tau, rho):  # tau: [|
         constraint.vars.append(i)
     clauses.append([constraint.res])
     constraints.append(constraint)
+
     res_path = "../../data/CNFs/universal_adversarial_robustness_" + Path(path).stem + ".cnfcc"
     file = open(res_path, 'w')
     file.write(
