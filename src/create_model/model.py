@@ -1,5 +1,6 @@
 import tensorflow as tf
 import larq as lq
+import numpy as np
 
 # larq.layers.QuantDense(k_otput, use_bias=True/False) -- полносвязный слой
 # larq.layers.QuantConv2D(k_otput, (kernel_h, kernel_w), use_bias=True/False) -- 2D свёртка
@@ -63,12 +64,46 @@ class Model:
         self.model.add(tf.keras.layers.Activation("softmax", name=str(self.ind) + "/Output/Activation"))
         self.ind += 1
 
-    def save(self):
-        # Load MNIST
-        (train_images, train_labels), (test_images, test_labels) = tf.keras.datasets.mnist.load_data()
-        train_images = train_images.reshape((60000, 28, 28, 1))
-        test_images = test_images.reshape((10000, 28, 28, 1))
-        train_images, test_images = train_images / 127.5 - 1, test_images / 127.5 - 1  # Normalize pixel values to be between -1 and 1
+    def save(self, dataset='mnist'):
+        if dataset == 'mnist':
+            # Load MNIST
+            (train_images, train_labels), (test_images, test_labels) = tf.keras.datasets.mnist.load_data()
+            train_images = train_images.reshape((60000, 28, 28, 1))
+            test_images = test_images.reshape((10000, 28, 28, 1))
+            train_images, test_images = train_images / 127.5 - 1, test_images / 127.5 - 1  # Normalize pixel values to be between -1 and 1
+        if dataset == 'cifar10':
+            (train_images, train_labels), (test_images, test_labels) = tf.keras.datasets.cifar10.load_data()
+            train_images, test_images = train_images / 127.5 - 1, test_images / 127.5 - 1  # Normalize pixel values to be between -1 and 1
+        if dataset == 'cifar10l':
+            (train_images_, train_labels), (test_images_, test_labels) = tf.keras.datasets.cifar10.load_data()
+            test_images = np.empty(test_images_.shape + (8,))
+            for i in range(len(test_images_)):
+                for j in range(len(test_images_[0])):
+                    for k in range(len(test_images_[0][0])):
+                        for l in range(len(test_images_[0][0][0])):
+                            num = '{0:08b}'.format(test_images_[i][j][k][l])
+                            for n in range(len(num)):
+                                if num[n] == '1':
+                                    test_images[i][j][k][l][n] = 1
+                                else:
+                                    test_images[i][j][k][l][n] = -1
+
+            train_images = np.empty(train_images_.shape + (8,))
+            for i in range(len(train_images_)):
+                for j in range(len(train_images_[0])):
+                    for k in range(len(train_images_[0][0])):
+                        for l in range(len(train_images_[0][0][0])):
+                            num = '{0:08b}'.format(train_images_[i][j][k][l])
+                            for n in range(len(num)):
+                                if num[n] == '1':
+                                    train_images[i][j][k][l][n] = 1
+                                else:
+                                    train_images[i][j][k][l][n] = -1
+        else:
+            train_images = [[-1, -1, -1, -1], [-1, 1, -1, -1], [-1, -1, -1, 1], [1, -1, 1, -1], [-1, 1, 1, -1], [-1, -1, 1, 1], [1, 1, -1, 1], [1, -1, 1, 1]]
+            train_labels = [0, 0, 0, 1, 0, 1, 1, 1]
+            test_images = [[1, -1, -1, -1], [-1, -1, 1, -1], [1, 1, -1, -1], [1, -1, -1, 1], [-1, 1, -1, 1], [1, 1, 1, -1], [-1, 1, 1, 1], [1, 1, 1, 1]]
+            test_labels = [0, 0, 1, 0, 1, 1, 1, 1]
 
         self.model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
         self.model.fit(train_images, train_labels, batch_size=64, epochs=5)

@@ -187,4 +187,4 @@ def input_by_output(path, reference_input, output, rho1, rho2=0):
 
 # input_by_output("../../data/models/model0.h5", np.array(ZERO), np.array([1, 0, 0, 0, 0, 0, 0, 0, 0, 0]), 0.2)
 # print_res("../../data/models/model0.h5", np.array(ZERO), np.array([1, 0, 0, 0, 0, 0, 0, 0, 0, 0]), 0.1, is_strongly=True)
-print_res("../../data/models/model6.h5", np.array(ZERO), np.array([1, 0, 0, 0, 0, 0, 0, 0, 0, 0]), 0.2)
+print_res("../../data/models/model0.h5", np.array(ZERO), np.array([1, 0, 0, 0, 0, 0, 0, 0, 0, 0]), 0.04)
