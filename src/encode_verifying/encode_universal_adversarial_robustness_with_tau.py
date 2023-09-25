@@ -10,6 +10,7 @@ def encode_universal_adversarial_robustness_with_tau(path, tau, rho):  # tau: [|
     encode = Encode(model)
     encode_with_tau = Encode(model, id_start=encode.all_vars[-1].id + 1)
 
+
     input = encode_with_tau.output_vars_layers[0]
     for i in range(len(encode_with_tau.clauses)):
         for j in range(len(encode_with_tau.clauses[i])):

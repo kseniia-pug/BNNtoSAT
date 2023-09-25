@@ -45,6 +45,7 @@ class Encode:
     def __init__(self, model, input_shape=tuple([28, 28, 1]), id_start=1):
         assert id_start > 0
 
+        self.model = model
         layers = model.layers
         self.layers = []
         self.all_vars = []
@@ -112,8 +113,8 @@ class Encode:
         for layer in self.layers:
             if layer[0].name.split('/')[1] == "Init":
                 self._encode_init(layer)
-            elif layer[0].name.split('/')[1] == "QuantConv2DMaxPooling2D":
-                self._encode_quant_conv2D_maxpooling2D(layer)
+            elif layer[0].name.split('/')[1] == "Pool2DAvg":
+                self._encode_pool2D_avg(layer)
             elif layer[0].name.split('/')[1] == "QuantConv2D":
                 self._encode_quant_conv2D(layer)
             elif layer[0].name.split('/')[1] == "Flatten":
@@ -159,11 +160,92 @@ class Encode:
         self.output_vars_layers.append((self.id_start, k))
         self.output_layers_shape.append(self.input_shape)
 
-    def _encode_quant_conv2D_maxpooling2D(self, layer):
-        raise NotImplementedError
+
+    def _encode_pool2D_avg(self, layer):
+        start = self.all_vars[-1].id + 1
+        k = 0
+        if len(self.output_vars_layers) == 0:
+            raise "First layer must be Init"
+        prev_var = self.output_vars_layers[-1]
+        prev_shape_layer = self.output_layers_shape[-1]
+        a = self.model.get_layer(name=layer[0].name).get_config()['pool_size']
+        strides = self.model.get_layer(name=layer[0].name).get_config()['strides']
+        padding = (0, 0)
+
+        c = self._get_c_for_batch_normalization(layer[1])[0] * (a[0]+a[1]+prev_shape_layer[2])
+
+        for t1 in range((prev_shape_layer[0] - a[0] + 2 * padding[0]) // strides[0] + 1):
+            for t2 in range((prev_shape_layer[1] - a[1] + 2 * padding[1]) // strides[1] + 1):
+                k += 1
+                constraint = Constraint()
+                var = self.create_var(layer[0].name)
+                constraint.res = var.id
+                sum_a = 0
+                for i in range(a[0]):
+                    for j in range(a[1]):
+                        for l in range(prev_shape_layer[2]):
+                            if i + t1 * strides[0] < padding[0] or i + t1 * strides[0] - padding[0] >= \
+                                    prev_shape_layer[0]:
+                                continue
+                            if j + t2 * strides[1] < padding[1] or j + t2 * strides[1] - padding[1] >= \
+                                    prev_shape_layer[1]:
+                                continue
+                            sum_a += 1
+                            constraint.vars.append((i + t1 * strides[0] - padding[0]) * a[0]
+                                                   + (j + t2 * strides[1] - padding[1]) * a[1]
+                                                   + l
+                                                   + prev_var[0])
+                constraint.c += (sum_a + c) // 2
+                self.constraints.append(constraint)
+        self.output_vars_layers.append((start, k))
+        self.output_layers_shape.append(((prev_shape_layer[0] - a[0] + 2 * padding[0]) / strides[0] + 1, (prev_shape_layer[1] - a[1] + 2 * padding[1]) / strides[1] + 1, 1))
 
     def _encode_quant_conv2D(self, layer):
-        raise NotImplementedError
+        start = self.all_vars[-1].id + 1
+        k = 0
+        if len(self.output_vars_layers) == 0:
+            raise "First layer must be Init"
+        prev_var = self.output_vars_layers[-1]
+        prev_shape_layer = self.output_layers_shape[-1]
+        a = layer[0].weights[0].read_value().numpy()
+        strides = self.model.get_layer(name=layer[0].name).get_config()['strides']
+        padding = (0, 0)
+
+        c = self._get_c_for_batch_normalization(layer[1])
+
+        for t3 in range(len(a[0][0][0])):
+            for t1 in range((prev_shape_layer[0] - len(a) + 2*padding[0]) // strides[0] + 1):
+                for t2 in range((prev_shape_layer[1] - len(a[0]) + 2*padding[1]) // strides[1] + 1):
+                    k += 1
+                    constraint = Constraint()
+                    var = self.create_var(layer[0].name)
+                    constraint.res = var.id
+                    sum_a = 0
+                    for i in range(len(a)):
+                        for j in range(len(a[0])):
+                            for l in range(len(a[0][0])):
+                                if i+t1*strides[0] < padding[0] or i+t1*strides[0] - padding[0] >= prev_shape_layer[0]:
+                                    continue
+                                if j+t2*strides[1] < padding[1] or j+t2*strides[1] - padding[1] >= prev_shape_layer[1]:
+                                    continue
+                                sum_a += a[i][j][l][t3]
+                                if a[i][j][l][t3] == 1:
+                                    constraint.vars.append((i+t1*strides[0]-padding[0])*len(a)
+                                                           + (j+t2*strides[1]-padding[1])*len(a[0])
+                                                           + l
+                                                           + prev_var[0])
+                                else:
+                                    constraint.c += 1
+                                    constraint.vars.append(-((i+t1*strides[0]-padding[0])*len(a)
+                                                           + (j+t2*strides[1]-padding[1])*len(a[0])
+                                                           + l
+                                                           + prev_var[0]))
+                    constraint.c += (sum_a + c[t3]) // 2
+                    self.constraints.append(constraint)
+        self.output_vars_layers.append((start, k))
+        self.output_layers_shape.append(((prev_shape_layer[0] - a[0] + 2 * padding[0]) / strides[0] + 1,
+                                         (prev_shape_layer[1] - a[1] + 2 * padding[1]) / strides[1] + 1, len(a[0][0][0])))
+
 
     def _encode_flatten(self, layer):
         k = 1
@@ -182,6 +264,10 @@ class Encode:
         if b is None:
             b = [0] * len(batch_normalization.moving_variance.read_value().numpy())
         c = [0] * len(b)
+        # if batch_normalization.gamma is None:
+        #     gamma = [1] * len(b)
+        # else:
+        #     gamma = batch_normalization.gamma.read_value().numpy()
         for i in range(len(c)):
             c_i = -(batch_normalization.moving_variance.read_value().numpy()[i] + batch_normalization.epsilon) / \
                   batch_normalization.gamma.read_value().numpy()[i] * batch_normalization.beta.read_value().numpy()[i] + \

@@ -1,0 +1,12 @@
+#!/bin/bash
+# $1 -- путь до закодированной модели, начиная с папки data без расширения, $2 -- расширение, $3 -- имя модели, $4 -- число итераций
+for ((var = 1; var <= $4; var++)); do
+  echo "----------------------------------------$var-------------------------------------->>"
+  path_res="../../../data/res_minisatcs/res_$3$var.txt"
+  input_path="../../../data/res_minisatcs/input_$3$var.txt"
+
+  python3 ./generate_input.py "$1.$2" > $input_path
+  ../../../solvers/minisatcs/minisat "../../../$1_input.$2" $path_res
+  python3 ./check_res.py $input_path $path_res
+  echo "<<--------------------------------------$var----------------------------------------"
+done
