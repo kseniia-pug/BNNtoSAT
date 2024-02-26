@@ -38,6 +38,7 @@ def create_model102(dataset='mnist'):
     model.add_output(units=10)
     model.save(dataset)
 
+
 def create_model103(dataset='mnist'):
     model = Model("model103")
     model.add_init()
@@ -50,6 +51,7 @@ def create_model103(dataset='mnist'):
     model.add_output(units=84)
     model.add_output(units=10)
     model.save(dataset)
+
 
 # def create_model1(dataset='mnist'):
 #     model = Model("model1")
@@ -467,4 +469,33 @@ def create_model12(dataset='my'):
 # create_model100()
 # create_model101()
 # create_model102()
-create_model103()
+# create_model103()
+
+def create_model_from_pytorch(dataset='mnistl'):
+    model = Model("model_from_pytorch")
+
+    model.add_init()
+    model.add_flatten()
+
+    model.add_quant_dense(units=512, use_bias=True)
+    model.add_quant_dense(units=512, use_bias=True)
+    model.add_quant_dense(units=128, use_bias=True)
+    model.add_output(units=10)
+
+    model.save(dataset)
+
+
+def create_model_from_pytorch2(dataset='mnistl'):
+    model = Model("model_from_pytorch2")
+
+    model.add_init()
+    model.add_flatten()
+
+    model.add_quant_dense(units=128, use_bias=True)
+    model.add_output(units=10)
+
+    model.save(dataset)
+
+
+create_model_from_pytorch()
+create_model_from_pytorch2()

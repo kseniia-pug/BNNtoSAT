@@ -77,6 +77,8 @@ THREE = [  [[-1], [-1], [-1], [-1], [-1], [-1], [-1], [-1], [-1], [-1], [-1], [-
             [[-1], [-1], [-1], [-1], [-1], [-1], [-1], [-1], [-1], [-1], [-1], [-1], [-1], [-1], [-1], [-1], [-1], [-1], [-1], [-1], [-1], [-1], [-1], [-1], [-1], [-1], [-1], [-1]],
            ]
 
+# print(len(ZERO), len(ZERO[0]), len(ZERO[0][0]))
+
 
 def print_img(s):
     new_pixels = []
@@ -222,7 +224,7 @@ def input_by_output_s(path, reference_input, output, rho1, rho2=1.):
 # input_by_output("../../data/models/model0.h5", np.array(ZERO), np.array([1, 0, 0, 0, 0, 0, 0, 0, 0, 0]), 0.2)
 # print_res("../../data/models/model0.h5", np.array(ZERO), np.array([1, 0, 0, 0, 0, 0, 0, 0, 0, 0]), 0., rho2=0.04, is_strongly=False)
 # print_res("../../data/models/model0.h5", np.array(ZERO), np.array([1, 0, 0, 0, 0, 0, 0, 0, 0, 0]), 0.8)
-print_res_s("../../data/models/model0.h5", np.array(THREE), np.array([0, 0, 0, 1, 0, 0, 0, 0, 0, 0]), 0., rho2=0.0, is_strongly=False)
+# print_res_s("../../data/models/model0.h5", np.array(THREE), np.array([0, 0, 0, 1, 0, 0, 0, 0, 0, 0]), 0., rho2=0.0, is_strongly=False)
 
 
 # print_img(ZERO)

@@ -68,10 +68,10 @@ class Model:
             test_images = test_images.reshape(-1, 28, 28, 1)
         elif dataset == 'mnistl':
             (train_images_, train_labels), (test_images_, test_labels) = tf.keras.datasets.mnist.load_data()
-            train_images_ = train_images_[:100]  # TODO
-            test_images_ = test_images_[:100]  # TODO
-            train_labels = train_labels[:100]  # TODO
-            test_labels = test_labels[:100]  # TODO
+            train_images_ = train_images_[:10000]  # TODO
+            test_images_ = test_images_[:1000]  # TODO
+            train_labels = train_labels[:10000]  # TODO
+            test_labels = test_labels[:1000]  # TODO
 
             test_images = np.empty((len(test_images_), 28, 28, 8))
             for k in range(len(test_images_)):
@@ -83,6 +83,8 @@ class Model:
                                 test_images[k][i][j][n] = 1
                             else:
                                 test_images[k][i][j][n] = -1
+                if k % 100 == 0:
+                    print(str(k) + "/" + str(len(train_images_)))
 
             train_images = np.empty((len(train_images_), 28, 28, 8))
             for k in range(len(train_images_)):
@@ -94,6 +96,8 @@ class Model:
                                 train_images[k][i][j][n] = 1
                             else:
                                 train_images[k][i][j][n] = -1
+                if k % 100 == 0:
+                    print(str(k) + "/" + str(len(train_images_)))
             # print(test_images_[:10])
             # print(test_images[:10])
         elif dataset == 'cifar10':
