@@ -16,6 +16,7 @@ np.set_printoptions(threshold=20000)
 # print(train_images_[0])
 # print(train_labels[0])
 
+
 def choose_reference_from_dataset():
     (train_images, train_labels), _ = tf.keras.datasets.mnist.load_data()
     id = random.randint(0, len(train_images) - 1)
@@ -36,6 +37,13 @@ def choose_reference_from_dataset():
 
     train_label = np.zeros(10)
     train_label[train_labels[id]] = 1
+
+    ans = ""
+    for j in range(10):
+        ans += "_" + str(int(train_label[j]))
+
+    plt.imshow(train_image_)
+    plt.savefig('../../solvers/img_res/reference' + ans + '.png')
 
     # print(train_image)
     # print(train_label)

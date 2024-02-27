@@ -7,10 +7,49 @@ import numpy as np
 import tensorflow as tf
 from larq.quantizers import SteSign
 from pathlib import Path
+import matplotlib.pyplot as plt
 
 from src.encode_model.encode_model import Encode, Constraint
-from src.encode_verifying.strange_input_by_output import ZERO, THREE
 from src.encode_verifying.strange_input_by_output_for_mnistl import choose_reference_from_dataset
+
+
+def save_img(image_, name):
+    image_ = image_[:28 * 28 * 8]
+    image_ = np.reshape(image_, (28, 28, 8))
+    image = np.empty((28, 28))
+    for i in range(len(image_)):
+        for j in range(len(image_[0])):
+            num = 0
+            for n in range(len(image_[0][0])):
+                if int(image_[i][j][n]) > 0:
+                    num += 2 ** (8 - n - 1)
+            image[i][j] = num
+
+    # print(image)
+
+    plt.imshow(image)
+    plt.savefig(name + '.png')
+
+
+def save_res_wrong(i):
+    file_res = "../../solvers/res/res_input_by_output"
+
+    file = open(file_res + str(i) + ".txt", 'r')
+    if not file.readline():
+        return
+    res = file.readline()
+    if not res:
+        return
+    vars = res.split()
+    ans = ""
+
+    for j in range(10):
+        ans += "_" + str(int(int(vars[6400 + j]) > 0))
+
+    save_img(vars, "../../solvers/img_res/res" + str(i) + ans)
+
+
+# save_res_wrong(0)
 
 
 def get_res_wrong(path, reference_input, output, rho1, rho2=0., is_strongly=False):
@@ -37,12 +76,13 @@ def get_res_wrong(path, reference_input, output, rho1, rho2=0., is_strongly=Fals
             vars = res.split()
             vars = list(map(int, vars))
             s = ""
-            for j in range(28*28*8):
+            for j in range(28 * 28 * 8):
                 s += str(-vars[j]) + " "
             s += "0\n"
             myfile.write("c appended cc " + str(i) + "\n" + s)
         end = time.time()
-        print("The time of finding an adversarial example " + str(i) + ":", (end-start), "s")
+        print("The time of finding an adversarial example " + str(i) + ":", (end - start), "s")
+        save_res_wrong(i)
 
 
 def input_by_output_strongly_wrong(path, reference_input, output, rho1, rho2=0.):
@@ -135,4 +175,4 @@ def input_by_output_wrong(path, reference_input, output, rho1, rho2=0.):
 
 ref, l = choose_reference_from_dataset()
 # get_res_wrong("../../data/models/mnistl/model_from_pytorch.h5", ref, l, 0.3, is_strongly=False)
-get_res_wrong("../../data/models/mnistl/model_from_pytorch2.h5", ref, l, 0.3, is_strongly=False)
+get_res_wrong("../../data/models/mnistl/model_from_pytorch2.h5", ref, l, 0.01, is_strongly=False)

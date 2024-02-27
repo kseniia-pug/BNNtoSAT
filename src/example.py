@@ -57,20 +57,20 @@ from src.encode_model.encode_model import Encode
 
 
 # Load MNIST
-_, (test_images, test_labels) = tf.keras.datasets.mnist.load_data()
-test_images = test_images.reshape((10000, 28, 28, 1))
-test_images = test_images / 127.5 - 1  # Normalize pixel values to be between -1 and 1
+# _, (test_images, test_labels) = tf.keras.datasets.mnist.load_data()
+# test_images = test_images.reshape((10000, 28, 28, 1))
+# test_images = test_images / 127.5 - 1  # Normalize pixel values to be between -1 and 1
 
 # Print image
-id_image = random.randint(0, 10000-1)
-plt.imshow(test_images[id_image])
-print(id_image)
-plt.show()
+# id_image = random.randint(0, 10000-1)
+# plt.imshow(test_images[id_image])
+# print(id_image)
+# plt.show()
 
 # Get stat
-model = tf.keras.models.load_model("../data/models/mnist/model103.h5")
-test_loss, test_acc = model.evaluate(test_images, test_labels)
-print(f"Test accuracy {test_acc * 100:.2f} %")
+# model = tf.keras.models.load_model("../data/models/mnist/model103.h5")
+# test_loss, test_acc = model.evaluate(test_images, test_labels)
+# print(f"Test accuracy {test_acc * 100:.2f} %")
 # lq.models.summary(model)
 #
 # # Get intermediate values
@@ -101,6 +101,28 @@ print(f"Test accuracy {test_acc * 100:.2f} %")
 # encode.print_vars()
 # encode.print_constraints()
 
+
+(train_images_, train_labels), (test_images_, test_labels) = tf.keras.datasets.mnist.load_data()
+test_images_ = test_images_[:1000]  # TODO
+test_labels = test_labels[:1000]  # TODO
+
+test_images = np.empty((len(test_images_), 28, 28, 8))
+for k in range(len(test_images_)):
+    for i in range(len(test_images_[0])):
+        for j in range(len(test_images_[0][0])):
+            num = '{0:08b}'.format(test_images_[k][i][j])
+            for n in range(len(num)):
+                if num[n] == '1':
+                    test_images[k][i][j][n] = 1
+                else:
+                    test_images[k][i][j][n] = -1
+    if k % 100 == 0:
+        print(str(k) + "/" + str(len(train_images_)))
+
+model = tf.keras.models.load_model("../data/models/mnistl/model_from_pytorch2.h5")
+test_loss, test_acc = model.evaluate(test_images, test_labels)
+print(f"Test accuracy {test_acc * 100:.2f} %")
+lq.models.summary(model)
 
 
 
