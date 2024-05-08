@@ -1,4 +1,9 @@
 data/
 __pycache__/
 .idea/
-solvers/
+solvers/img_res
+solvers/img_res1
+solvers/old
+solvers/random
+solvers/res
+solvers/res1
