@@ -142,6 +142,6 @@ class Model:
         self.model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
         self.model.fit(train_images, train_labels, batch_size=64, epochs=20)
         _, test_acc = self.model.evaluate(test_images, test_labels)
-        print(f"Test accuracy {test_acc * 100:.2f} %")
+        print(f"Test accuracy {self.name} -- {test_acc * 100:.2f} %")
         with lq.context.quantized_scope(True):
             self.model.save("../../data/models/" + dataset + "/" + self.name + ".h5")

@@ -516,4 +516,352 @@ def create_model_for_struct2(dataset='mnistl'):
 # create_model_from_pytorch()
 # create_model_from_pytorch2()
 
-create_model_for_struct2()
+# create_model_for_struct2()
+
+
+# ------------------------------------- test --------------------------------------------
+
+def create_model_test1(dataset='mnistl'):
+    model = Model("model_test1")
+
+    model.add_init()
+    model.add_flatten()
+
+    model.add_quant_dense(units=512, use_bias=True)
+    model.add_quant_dense(units=128, use_bias=True)
+    model.add_output(units=10)
+
+    model.save(dataset)
+
+
+def create_model_test2(dataset='mnistl'):
+    model = Model("model_test2")
+
+    model.add_init()
+    model.add_flatten()
+
+    model.add_quant_dense(units=512, use_bias=True)
+    model.add_quant_dense(units=512, use_bias=True)
+    model.add_quant_dense(units=128, use_bias=True)
+    model.add_output(units=10)
+
+    model.save(dataset)
+
+
+def create_model_test3(dataset='mnistl'):
+    model = Model("model_test3")
+
+    model.add_init()
+    model.add_flatten()
+
+    model.add_quant_dense(units=1024, use_bias=True)
+    model.add_quant_dense(units=512, use_bias=True)
+    model.add_quant_dense(units=128, use_bias=True)
+    model.add_output(units=10)
+
+    model.save(dataset)
+
+
+def create_model_test4(dataset='mnistl'):
+    model = Model("model_test4")
+
+    model.add_init()
+    model.add_flatten()
+
+    model.add_quant_dense(units=2048, use_bias=True)
+    model.add_quant_dense(units=1024, use_bias=True)
+    model.add_quant_dense(units=512, use_bias=True)
+    model.add_quant_dense(units=128, use_bias=True)
+    model.add_output(units=10)
+
+    model.save(dataset)
+
+
+def create_model_test5(dataset='mnistl'):
+    model = Model("model_test5")
+
+    model.add_init()
+    model.add_flatten()
+
+    model.add_quant_dense(units=2048, use_bias=True)
+    model.add_quant_dense(units=1024, use_bias=True)
+    model.add_quant_dense(units=2048, use_bias=True)
+    model.add_quant_dense(units=512, use_bias=True)
+    model.add_quant_dense(units=128, use_bias=True)
+    model.add_output(units=10)
+
+    model.save(dataset)
+
+
+def create_model_test6(dataset='mnistl'):
+    model = Model("model_test6")
+
+    model.add_init()
+    model.add_flatten()
+
+    model.add_quant_dense(units=2048, use_bias=True)
+    model.add_quant_dense(units=1024, use_bias=True)
+    model.add_quant_dense(units=1024, use_bias=True)
+    model.add_quant_dense(units=1024, use_bias=True)
+    model.add_quant_dense(units=512, use_bias=True)
+    model.add_quant_dense(units=128, use_bias=True)
+    model.add_output(units=10)
+
+    model.save(dataset)
+
+
+def create_model_test7(dataset='mnistl'):
+    model = Model("model_test7")
+
+    model.add_init()
+    model.add_flatten()
+
+    model.add_quant_dense(units=2048, use_bias=True)
+    model.add_quant_dense(units=1024, use_bias=True)
+    model.add_quant_dense(units=512, use_bias=True)
+    model.add_quant_dense(units=1024, use_bias=True)
+    model.add_quant_dense(units=128, use_bias=True)
+    model.add_output(units=10)
+
+    model.save(dataset)
+
+
+def create_model_test8(dataset='mnistl'):
+    model = Model("model_test8")
+
+    model.add_init()
+    model.add_flatten()
+
+    model.add_quant_dense(units=4096, use_bias=True)
+    model.add_quant_dense(units=1024, use_bias=True)
+    model.add_quant_dense(units=512, use_bias=True)
+    model.add_quant_dense(units=128, use_bias=True)
+    model.add_output(units=10)
+
+    model.save(dataset)
+
+
+def create_model_test9(dataset='mnistl'):
+    model = Model("model_test9")
+
+    model.add_init()
+    model.add_flatten()
+
+    model.add_quant_dense(units=4096, use_bias=True)
+    model.add_quant_dense(units=2048, use_bias=True)
+    model.add_quant_dense(units=1024, use_bias=True)
+    model.add_quant_dense(units=512, use_bias=True)
+    model.add_quant_dense(units=128, use_bias=True)
+    model.add_output(units=10)
+
+    model.save(dataset)
+
+
+def create_model_test10(dataset='mnistl'):
+    model = Model("model_test10")
+
+    model.add_init()
+    model.add_flatten()
+
+    model.add_quant_dense(units=4096, use_bias=True)
+    model.add_quant_dense(units=2048, use_bias=True)
+    model.add_quant_dense(units=4096, use_bias=True)
+    model.add_quant_dense(units=2048, use_bias=True)
+    model.add_quant_dense(units=1024, use_bias=True)
+    model.add_quant_dense(units=512, use_bias=True)
+    model.add_quant_dense(units=128, use_bias=True)
+    model.add_output(units=10)
+
+    model.save(dataset)
+
+
+def create_model_test11(dataset='mnistl'):
+    model = Model("model_test11")
+
+    model.add_init()
+    model.add_flatten()
+
+    model.add_quant_dense(units=4096, use_bias=True)
+    model.add_quant_dense(units=2048, use_bias=True)
+    model.add_quant_dense(units=4096, use_bias=True)
+    model.add_quant_dense(units=2048, use_bias=True)
+    model.add_quant_dense(units=1024, use_bias=True)
+    model.add_quant_dense(units=512, use_bias=True)
+    model.add_quant_dense(units=128, use_bias=True)
+    model.add_output(units=10)
+
+    model.save(dataset)
+
+
+def create_model_test12(dataset='mnistl'):
+    model = Model("model_test12")
+
+    model.add_init()
+    model.add_flatten()
+
+    model.add_quant_dense(units=4096, use_bias=True)
+    model.add_quant_dense(units=2048, use_bias=True)
+    model.add_quant_dense(units=4096, use_bias=True)
+    model.add_quant_dense(units=2048, use_bias=True)
+    model.add_quant_dense(units=1024, use_bias=True)
+    model.add_quant_dense(units=512, use_bias=True)
+    model.add_quant_dense(units=1024, use_bias=True)
+    model.add_quant_dense(units=512, use_bias=True)
+    model.add_quant_dense(units=128, use_bias=True)
+    model.add_output(units=10)
+
+    model.save(dataset)
+
+
+def create_model_test13(dataset='mnistl'):
+    model = Model("model_test13")
+
+    model.add_init()
+    model.add_flatten()
+
+    model.add_quant_dense(units=4096, use_bias=True)
+    model.add_quant_dense(units=2048, use_bias=True)
+    model.add_quant_dense(units=2048, use_bias=True)
+    model.add_quant_dense(units=1024, use_bias=True)
+    model.add_quant_dense(units=1024, use_bias=True)
+    model.add_quant_dense(units=512, use_bias=True)
+    model.add_quant_dense(units=128, use_bias=True)
+    model.add_output(units=10)
+
+    model.save(dataset)
+
+
+def create_model_test14(dataset='mnistl'):
+    model = Model("model_test14")
+
+    model.add_init()
+    model.add_flatten()
+
+    model.add_quant_dense(units=4096, use_bias=True)
+    model.add_quant_dense(units=4096, use_bias=True)
+    model.add_quant_dense(units=2048, use_bias=True)
+    model.add_quant_dense(units=1024, use_bias=True)
+    model.add_quant_dense(units=512, use_bias=True)
+    model.add_quant_dense(units=128, use_bias=True)
+    model.add_output(units=10)
+
+    model.save(dataset)
+
+
+def create_model_test15(dataset='mnistl'):
+    model = Model("model_test15")
+
+    model.add_init()
+    model.add_flatten()
+
+    model.add_quant_dense(units=4096, use_bias=True)
+    model.add_quant_dense(units=512, use_bias=True)
+    model.add_quant_dense(units=128, use_bias=True)
+    model.add_output(units=10)
+
+    model.save(dataset)
+
+
+def create_model_test16(dataset='mnistl'):
+    model = Model("model_test16")
+
+    model.add_init()
+    model.add_flatten()
+
+    model.add_quant_dense(units=4096, use_bias=True)
+    model.add_quant_dense(units=4096, use_bias=True)
+    model.add_quant_dense(units=4096, use_bias=True)
+    model.add_quant_dense(units=512, use_bias=True)
+    model.add_quant_dense(units=128, use_bias=True)
+    model.add_output(units=10)
+
+    model.save(dataset)
+
+
+def create_model_test17(dataset='mnistl'):
+    model = Model("model_test17")
+
+    model.add_init()
+    model.add_flatten()
+
+    model.add_quant_dense(units=4096, use_bias=True)
+    model.add_quant_dense(units=2048, use_bias=True)
+    model.add_quant_dense(units=1024, use_bias=True)
+    model.add_quant_dense(units=512, use_bias=True)
+    model.add_quant_dense(units=128, use_bias=True)
+    model.add_quant_dense(units=64, use_bias=True)
+    model.add_output(units=10)
+
+    model.save(dataset)
+
+
+def create_model_test18(dataset='mnistl'):
+    model = Model("model_test18")
+
+    model.add_init()
+    model.add_flatten()
+
+    model.add_quant_dense(units=4096, use_bias=True)
+    model.add_quant_dense(units=2048, use_bias=True)
+    model.add_quant_dense(units=1024, use_bias=True)
+    model.add_quant_dense(units=512, use_bias=True)
+    model.add_quant_dense(units=128, use_bias=True)
+    model.add_quant_dense(units=64, use_bias=True)
+    model.add_quant_dense(units=32, use_bias=True)
+    model.add_output(units=10)
+
+    model.save(dataset)
+
+
+def create_model_test19(dataset='mnistl'):
+    model = Model("model_test19")
+
+    model.add_init()
+    model.add_flatten()
+
+    model.add_quant_dense(units=4096, use_bias=True)
+    model.add_quant_dense(units=4096, use_bias=True)
+    model.add_quant_dense(units=512, use_bias=True)
+    model.add_quant_dense(units=512, use_bias=True)
+    model.add_quant_dense(units=64, use_bias=True)
+    model.add_quant_dense(units=64, use_bias=True)
+    model.add_output(units=10)
+
+    model.save(dataset)
+
+
+def create_model_test20(dataset='mnistl'):
+    model = Model("model_test20")
+
+    model.add_init()
+    model.add_flatten()
+
+    model.add_quant_dense(units=4096, use_bias=True)
+    model.add_quant_dense(units=512, use_bias=True)
+    model.add_quant_dense(units=64, use_bias=True)
+    model.add_quant_dense(units=16, use_bias=True)
+    model.add_output(units=10)
+
+    model.save(dataset)
+
+
+create_model_test1()
+create_model_test2()
+create_model_test3()
+create_model_test4()
+create_model_test5()
+create_model_test6()
+create_model_test7()
+create_model_test8()
+create_model_test9()
+create_model_test10()
+create_model_test11()
+create_model_test12()
+create_model_test13()
+create_model_test14()
+create_model_test15()
+create_model_test16()
+create_model_test17()
+create_model_test18()
+create_model_test19()
+create_model_test20()
