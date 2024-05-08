@@ -497,5 +497,23 @@ def create_model_from_pytorch2(dataset='mnistl'):
     model.save(dataset)
 
 
-create_model_from_pytorch()
-create_model_from_pytorch2()
+def create_model_for_struct2(dataset='mnistl'):
+    model = Model("model_for_struct2")
+
+    model.add_init()
+    model.add_flatten()
+
+    model.add_quant_dense(units=4096, use_bias=True)
+    model.add_quant_dense(units=2048, use_bias=True)
+    model.add_quant_dense(units=512, use_bias=True)
+    model.add_quant_dense(units=128, use_bias=True)
+
+    model.add_output(units=10)
+
+    model.save(dataset)
+
+
+# create_model_from_pytorch()
+# create_model_from_pytorch2()
+
+create_model_for_struct2()

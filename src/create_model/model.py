@@ -140,7 +140,7 @@ class Model:
             test_labels = [0, 0, 1, 0, 1, 1, 1, 1]
 
         self.model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
-        self.model.fit(train_images, train_labels, batch_size=64, epochs=5)
+        self.model.fit(train_images, train_labels, batch_size=64, epochs=20)
         _, test_acc = self.model.evaluate(test_images, test_labels)
         print(f"Test accuracy {test_acc * 100:.2f} %")
         with lq.context.quantized_scope(True):

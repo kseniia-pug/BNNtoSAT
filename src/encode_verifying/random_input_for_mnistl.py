@@ -1,5 +1,4 @@
-# вход, на котором сеть распознает не верно
-# выход не равен тому, что должно. Вход отклоняется не более, чем на rho1, и не менее, чем на rho2
+# Рандомный вход, который отклоняется не более, чем на rho1, и не менее, чем на rho2
 import subprocess
 import time
 import larq as lq
@@ -45,24 +44,21 @@ def save_res_wrong(path, name):
     for j in range(10):
         ans += "_" + str(int(int(vars[6400 + j]) > 0))
 
-    save_img(vars, "../../solvers/img_res/res" + str(i) + ans + "_" + name)
+    save_img(vars, "../../solvers/random/img_res/res" + str(i) + ans + "_" + name)
 
 
 # save_res_wrong(0)
 
 
-def get_res_wrong(path, reference_input, output, rho1, rho2=0., name="", is_strongly=False):
+def get_res_wrong(path, reference_input, output, rho1, rho2=0., name=""):
     print("path:", Path(path).stem, "!")
-    if is_strongly:
-        res_vars = input_by_output_strongly_wrong(path, reference_input, output, rho1, rho2)
-    else:
-        res_vars = input_by_output_wrong(path, reference_input, output, rho1, rho2)
+    res_vars = input_by_output_wrong(path, reference_input, output, rho1, rho2)
     print("End coding", Path(path).stem, res_vars)
 
-    for i in range(10000):
+    for i in range(1005):
         start = time.time()
         file_model = "../../data/CNFs/mnistl/input_by_output_" + Path(path).stem + ".cnfcc"
-        file_res = "../../solvers/res/res_input_by_output_" + name + "_" + str(i) + ".txt"
+        file_res = "../../solvers/random/res/res_input_by_output_" + name + "_" + str(i) + ".txt"
         subprocess.run(["./../../solvers/minisatcs/minisat", file_model, file_res])
         with open(file_model, "a") as myfile:
             file = open(file_res, 'r')
@@ -81,54 +77,9 @@ def get_res_wrong(path, reference_input, output, rho1, rho2=0., name="", is_stro
             myfile.write("c appended cc " + str(i) + "\n" + s)
         end = time.time()
         print("The time of finding an adversarial example " + str(i) + ":", (end - start), "s")
-        with open("../../solvers/res.txt", "a") as myfile:
+        with open("../../solvers/random/res.txt", "a") as myfile:
             myfile.write(str(end - start) + "\n")
         save_res_wrong(file_res, "res_input_by_output_" + name + "_" + str(i))
-
-
-def input_by_output_strongly_wrong(path, reference_input, output, rho1, rho2=0.):
-    model = tf.keras.models.load_model(path, custom_objects={"custom_activation": SteSign})
-    encode = Encode(model, input_shape=tuple([28, 28, 8]))
-
-    assert encode.output_layers_shape[-1] == output.shape
-    assert encode.input_shape == reference_input.shape
-
-    reference_input = reference_input.flatten()
-    output = output.flatten()
-
-    for i in range(len(output)):
-        if output[i] == 1:
-            encode.clauses.append([-(encode.output_vars_layers[-1][0] + i)])
-        else:
-            encode.clauses.append([encode.output_vars_layers[-1][0] + i])
-
-    constraint = Constraint()
-    res = encode.create_var('variance').id
-    encode.clauses.append([res])
-    constraint.res = res
-    constraint.c = int(len(reference_input) * (1 - rho1))
-    for i in range(len(reference_input)):
-        if reference_input[i] == 1:
-            constraint.vars.append(encode.output_vars_layers[0][0] + i)
-        else:
-            constraint.vars.append(-(encode.output_vars_layers[0][0] + i))
-    encode.constraints.append(constraint)
-
-    constraint = Constraint()
-    res = encode.create_var('variance').id
-    encode.clauses.append([res])
-    constraint.res = res
-    constraint.c = int(len(reference_input) * rho2)
-    for i in range(len(reference_input)):
-        if reference_input[i] == 1:
-            constraint.vars.append(-(encode.output_vars_layers[0][0] + i))
-        else:
-            constraint.vars.append(encode.output_vars_layers[0][0] + i)
-    encode.constraints.append(constraint)
-
-    res_path = "../../data/CNFs/mnistl/input_by_output_" + Path(path).stem + ".cnfcc"
-    encode.save(res_path)
-    return encode.output_vars_layers[-1]
 
 
 def input_by_output_wrong(path, reference_input, output, rho1, rho2=0.):
@@ -141,9 +92,9 @@ def input_by_output_wrong(path, reference_input, output, rho1, rho2=0.):
     reference_input = reference_input.flatten()
     output = output.flatten()
 
-    for i in range(len(output)):
-        if output[i] == 1:
-            encode.clauses.append([-(encode.output_vars_layers[-1][0] + i)])
+    # for i in range(len(output)):
+    #     if output[i] == 1:
+    #         encode.clauses.append([-(encode.output_vars_layers[-1][0] + i)])
 
     constraint = Constraint()
     res = encode.create_var('variance').id
@@ -260,9 +211,9 @@ for i in range(len(train_images_)):
 # with lq.context.quantized_scope(True):
 #     model.model.save("../../data/models/mnitl/input_by_output_model_from_pytorch2_after.h5")
 
-# for i in range(40):
+for i in range(1):
     # if i < 3:
     #     continue
-ref, l = choose_reference_from_dataset(name=str(0))
-get_res_wrong("../../data/models/mnistl/model_from_pytorch.h5", ref, l, 0.05, is_strongly=False, name=str(0))
-# get_res_wrong("../../data/models/mnistl/model_from_pytorch2.h5", ref, l, 0.03, is_strongly=False, name=str(i))
+    ref, l = choose_reference_from_dataset(name=str(i))
+    # get_res_wrong("../../data/models/mnistl/model_from_pytorch.h5", ref, l, 0.3, is_strongly=False)
+    get_res_wrong("../../data/models/mnistl/model_from_pytorch2.h5", ref, l, 0.03, name=str(i))
